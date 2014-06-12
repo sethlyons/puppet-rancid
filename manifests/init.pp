@@ -58,6 +58,16 @@ class rancid (
         }
       }
     }
+    'FreeBSD': {
+      $default_packages        = [ 'rancid' ]
+      $default_rancid_config   = '/usr/local/etc/rancid/rancid.conf'
+      $default_user            = 'rancid'
+      $default_group           = 'rancid'
+      $default_shell           = '/bin/csh'
+      $default_homedir         = '/usr/local/var/rancid'
+      $default_logdir          = '/usr/local/var/rancid/logs'
+      $default_rancid_path_env = '/usr/local/libexec/rancid:/usr/bin:/usr/local/bin:/usr/sbin:/bin:/usr/bin'
+    }
   }
 
   if $packages == 'USE_DEFAULTS' {
