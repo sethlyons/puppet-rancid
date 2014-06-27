@@ -3,24 +3,26 @@
 # Manage RANCID - http://www.shrubbery.net/rancid/
 #
 class rancid (
-  $filterpwds       = 'ALL', # yes, no, all
-  $nocommstr        = 'YES', # yes or no
-  $maxrounds        = '4',
-  $oldtime          = '4',
-  $locktime         = '4',
-  $parcount         = '5',
-  $groups           = [ 'routers', 'switches', 'firewalls' ],
-  $devices          = undef,
-  $packages         = 'USE_DEFAULTS',
-  $rancid_config    = 'USE_DEFAULTS',
-  $rancid_path_env  = 'USE_DEFAULTS',
-  $homedir          = 'USE_DEFAULTS',
-  $logdir           = 'USE_DEFAULTS',
-  $user             = 'USE_DEFAULTS',
-  $group            = 'USE_DEFAULTS',
-  $shell            = 'USE_DEFAULTS',
-  $cron_d_file      = '/etc/cron.d/rancid',
-  $cloginrc_content = 'USE_DEFAULTS',
+  $filterpwds         = 'ALL', # yes, no, all
+  $nocommstr          = 'YES', # yes or no
+  $maxrounds          = '4',
+  $oldtime            = '4',
+  $locktime           = '4',
+  $parcount           = '5',
+  $groups             = [ 'routers', 'switches', 'firewalls' ],
+  $devices            = undef,
+  $packages           = 'USE_DEFAULTS',
+  $rancid_config      = 'USE_DEFAULTS',
+  $rancid_path_env    = 'USE_DEFAULTS',
+  $homedir            = 'USE_DEFAULTS',
+  $logdir             = 'USE_DEFAULTS',
+  $user               = 'USE_DEFAULTS',
+  $group              = 'USE_DEFAULTS',
+  $shell              = 'USE_DEFAULTS',
+  $cron_d_file        = '/etc/cron.d/rancid',
+  $default_cron_user  = 'root',
+  $default_cron_group = 'root',
+  $cloginrc_content   = 'USE_DEFAULTS',
 ) {
 
   # set default parameters
@@ -67,6 +69,8 @@ class rancid (
       $default_homedir         = '/usr/local/var/rancid'
       $default_logdir          = '/usr/local/var/rancid/logs'
       $default_rancid_path_env = '/usr/local/libexec/rancid:/usr/bin:/usr/local/bin:/usr/sbin:/bin:/usr/bin'
+      $cron_user               = $default_user
+      $cron_group              = $default_group
     }
   }
 
@@ -122,6 +126,14 @@ class rancid (
     $rancid_path_env_real = $default_rancid_path_env
   } else {
     $rancid_path_env_real = $rancid_path_env
+  }
+
+  if $cron_user == undef {
+    $cron_user = $default_cron_user
+  }
+
+  if $cron_group == undef {
+    $cron_group = $default_cron_group
   }
 
   # validate parameters
@@ -201,8 +213,8 @@ class rancid (
   file { 'rancid_cron_d_file':
     ensure  => present,
     path    => $cron_d_file,
-    owner   => 'root',
-    group   => 'root',
+    owner   => $cron_user,
+    group   => $cron_group,
     mode    => '0644',
     content => template('rancid/rancid-cron.erb'),
     require => Package[$packages_real],
